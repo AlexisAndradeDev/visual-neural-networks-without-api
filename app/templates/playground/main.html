@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<title>Visual CNN - Playground</title>
+<script scr="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.2/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.10.2/Sortable.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row flex-fill justify-content-md-center">
+        <div class="col-12">
+            {% include 'playground/includes/select_neural_network.html' %}
+        </div>
+    </div>
+
+    <div class="row flex-fill justify-content-md-center" style="margin-top: 2rem;">
+        <div class="col-12">
+            {% include 'playground/includes/parameters.html' %}
+        </div>
+    </div>
+
+    <div class="row flex-fill justify-content-md-center" style="margin-top: 2rem;">
+        <div class="col-12">
+            {% include 'playground/includes/results.html' %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function displayLearningRate() {
+        var selectedOptimizer = document.getElementById("optimizer").value;
+        if (selectedOptimizer == "RMSprop") {
+            document.getElementById("div_learning_rate").style.display = "block";
+        } else {
+            document.getElementById("div_learning_rate").style.display = "none";
+        }
+    }
+
+    function displayLayerParameter(parameterName, layerId, layerType, typesThatUseThisParameter) {
+        if (typesThatUseThisParameter.indexOf(layerType) != -1) {
+            document.getElementById(`div_${parameterName}_layer_${layerId}`).style.display = "block";
+        } else {
+            document.getElementById(`div_${parameterName}_layer_${layerId}`).style.display = "none";
+        }
+    }
+
+    function displayLayerParameters(layerId, layerType) {
+        // activation function
+        displayLayerParameter("activation_function", layerId, layerType, ["Dense", "Conv2D"]);
+
+        // units
+        displayLayerParameter("units", layerId, layerType, ["Dense"]);
+
+        // filters
+        displayLayerParameter("filters", layerId, layerType, ["Conv2D"]);
+
+        // kernel size
+        displayLayerParameter("kernel_size", layerId, layerType, ["Conv2D"]);
+
+        // pool size
+        displayLayerParameter("pool_size", layerId, layerType, ["MaxPooling2D"]);
+    }
+
+    function changeDisplayedLayerParameters(selectType) {
+        var layerType = selectType.value;
+        var selectId = selectType.id;
+        var layerId = selectId.split("-")[0];
+        displayLayerParameters(layerId, layerType);
+    }
+
+    function displayLayersParemeters() {
+        {% for layer in neural_network.sorted_layers %}
+        layerId = "{{ layer.id }}";
+        layerType = "{{ layer.type_ }}";
+        displayLayerParameters(layerId, layerType);
+        {% endfor %}
+    }
+
+    function onTrainNeuralNetwork() {
+        document.getElementById("train-info").style.display = "block";
+    }
+
+    function changeFeatureImage(featureNumberInput) {
+        var featureNumber = featureNumberInput.value;
+        var rangeId = featureNumberInput.id;
+        var layerId = rangeId.split("-")[1];
+        var layersImages = {{ layers_images | tojson }};
+        var layerImages = layersImages[layerId];
+
+        if (featureNumber > layerImages.length) {
+            return
+        }
+
+        var featureImage = layerImages[featureNumber-1];
+
+        // update textbox or range
+        document.getElementById(`range_feature_number-${layerId}`).value = featureNumber;
+        document.getElementById(`textbox_feature_number-${layerId}`).value = featureNumber;
+
+        document.getElementById(`img_feature-${layerId}`).src = featureImage;
+    }
+
+    function getLayersOrder() {
+        const layers_divs = document.querySelectorAll("#layers_parameters>div");
+        var order_list = [];
+        for (var i = 0; i < layers_divs.length; i++) {
+            var layer_id = layers_divs.item(i).id;
+            var layer_id = layer_id.split("-")[1];
+            order_list.push(layer_id);
+        }
+        return order_list
+    }
+
+    function updateLayersOrderHiddenValue() {
+        document.getElementById("layers_order").value = `${getLayersOrder()}`;
+    }
+
+    function createLayersSortable() {
+        const layersParametersDiv = document.querySelector("#layers_parameters")
+        new Sortable(layersParametersDiv, {
+            handle: ".handle",
+            animation: 350,
+        })
+    }
+
+    window.onload = function(){
+        displayLearningRate();
+        displayLayersParemeters();
+        createLayersSortable();
+    }
+</script>
+{% endblock %}

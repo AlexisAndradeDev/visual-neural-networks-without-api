@@ -1,0 +1,68 @@
+<form method="POST">
+    {{ nn_parameters_form.hidden_tag() }}
+    <h5 style="font-weight: 600;">Neural Network Parameters</h5>
+
+    <div class="row flex-fill">
+        <div class="col-12" style="margin-top: 1.2rem;">
+            <input name="neural_network_name" class="form-control bg-dark" type="text" value="{{ neural_network.name }}"
+                style="color: #f2f2f2; font-weight: 600; font-size: 1.1rem;">
+            </input>
+        </div>
+
+        <div class="col-12" style="margin-top: 1.2rem;">
+            <label><b style="font-weight: 600;">Creator:</b> {{neural_network.creator_user.username}}</label>
+        </div>
+
+        <div class="col-12" style="margin-top: 1.2rem;">
+            <label style="font-weight: 600;">Loss function:</label>
+            <select name="loss_function">
+                {% for loss_function in loss_functions %}
+                    {% if loss_function == neural_network.loss %}
+                        <option value="{{ loss_function }}" SELECTED>{{ loss_function }}</option>
+                    {% else %}
+                        <option value="{{ loss_function }}">{{ loss_function }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-12" style="margin-top: 1.2rem;">
+            <label style="font-weight: 600;">Optimizer:</label>
+            <select name="optimizer" id="optimizer" oninput="displayLearningRate()">
+                {% for optimizer in optimizers %}
+                    {% if optimizer == neural_network.optimizer %}
+                        <option value="{{ optimizer }}" SELECTED>{{ optimizer }}</option>
+                    {% else%}
+                        <option value="{{ optimizer }}">{{ optimizer }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-12" style="margin-top: 1.2rem;">
+            <div id="div_learning_rate" style="display: none;">
+                <label style="font-weight: 600;">Learning rate:</label>
+                <input name="learning_rate" class="form-control" type="text" value="{{ neural_network.learning_rate }}"></input>
+            </div>
+        </div>
+
+        <div class="col-12" style="margin-top: 1.2rem;">
+            <label style="font-weight: 600;">Epochs/Iterations:</label>
+            <input name="epochs" class="form-control" type="text" value="{{ neural_network.epochs }}"></input>
+        </div>
+
+        <div class="col-12" style="margin-top: 1.2rem;">
+            <label style="font-weight: 600;">Dataset:</label>
+            <select name="dataset_name">
+                {% for dataset in datasets_names %}
+                    {% if dataset == neural_network.dataset_name %}
+                        <option value="{{ dataset }}" SELECTED>{{ dataset }}</option>
+                    {% else %}
+                        <option value="{{ dataset }}">{{ dataset }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    {{ nn_parameters_form.submitNNParameters(class="btn btn-outline-success", style="margin-top: 2rem;") }}
+</form>

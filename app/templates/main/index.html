@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block extra_head %}
+<title>Visual CNN</title>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="card shadow-sm text-center" style="color: rgb(40,40,40);">
+            <h1 style="font-weight: 600; margin-top: 1rem; color: rgb(0, 120, 0);">Visual Convolutional Neural Networks</h1>
+            <p style="margin-top: 1rem;" class="lead font-weight-normal">
+                Start creating your own neural networks by clicking the link below.
+            </p>
+            <a style="font-size: 1.2rem;" class="btn btn-outline-success btn-lg" href="{{ url_for('playground.main_page') }}">
+                Playground
+            </a>
+        </div>
+    </div>
+    </div>
+{% endblock %}

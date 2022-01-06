@@ -1,0 +1,74 @@
+<form method="POST">
+    {{ layers_parameters_form.hidden_tag() }}
+    <h5 style="font-weight: 600; font-size: 1.5rem; margin-top: 3rem;">Layers</h5>
+
+    <div class="wrapper" id="layers_parameters">
+        {% for layer in neural_network.sorted_layers %}
+        <div class="item" id="parameters-{{ layer.id }}">
+            <div class="row flex-fill" style="margin-top: 3rem;">
+                <div class="col-1">
+                    <i class="handle fas fa-bars" style="font-size: 1.7rem; cursor: pointer; position: absolute; top: 20%;"></i>
+                </div>
+                <div class="col-10" id="div_name_layer_{{ layer.id }}">
+                    <input name="name_{{ layer.id }}" class="form-control" type="text" value="{{ layer.name }}" style="color: #f2f2f2; background-color: rgb(218, 80, 0); font-weight: 600; font-size: 1.1rem;">
+                </div>
+                <div class="col-3" style="margin-top: 1rem;">
+                    <input type="checkbox" name="delete_{{ layer.id }}" value="0">
+                    <i class="fa fa-trash"></i>
+                </div>
+
+                <div class="col-12" id="div_type_layer_{{ layer.id }}" style="margin-top: 1.2rem;">
+                    <label style="font-weight: 600;">Type:</label>
+                    <select name="type_{{ layer.id }}" id="{{ layer.id }}-type" oninput="changeDisplayedLayerParameters(this)">
+                        {% for type in layer_types %}
+                            {% if type == layer.type_ %}
+                                <option value="{{ type }}" SELECTED>{{ type }}</option>
+                            {% else %}
+                                <option value="{{ type }}">{{ type }}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-12" id="div_units_layer_{{ layer.id }}" style="display: none; margin-top: 1.2rem;">
+                    <label style="font-weight: 600;">Units (neurons):</label>
+                    <input name="units_{{ layer.id }}" class="form-control" type="text" value="{{ layer.units }}">
+                </div>
+
+                <div class="col-12" id="div_filters_layer_{{ layer.id }}" style="display: block; margin-top: 1.2rem;">  
+                    <label style="font-weight: 600;">Number of filters:</label>
+                    <input name="filters_{{ layer.id }}" class="form-control" type="text" value="{{ layer.filters }}">
+                </div>
+
+                <div class="col-12" id="div_activation_function_layer_{{ layer.id }}" style="display: block; margin-top: 1.2rem;">
+                    <label style="font-weight: 600;">Activation function:</label>
+                    <select name="activation_function_{{ layer.id }}">
+                        {% for activation_function in activation_functions %}
+                            {% if activation_function == layer.activation_function %}
+                                <option value="{{ activation_function }}" SELECTED>{{ activation_function }}</option>
+                            {% else %}
+                                <option value="{{ activation_function }}">{{ activation_function}}</option>
+                            {% endif %}
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-12" id="div_kernel_size_layer_{{ layer.id }}" style="display: block; margin-top: 1.2rem;">
+                    <label style="font-weight: 600;">Kernel size:</label>
+                    <input name="kernel_size_{{ layer.id }}" class="form-control" type="text" value="{{ layer.kernel_size }}">
+                </div>
+
+                <div class="col-12" id="div_pool_size_layer_{{ layer.id }}" style="display: none; margin-top: 1.2rem;">
+                    <label style="font-weight: 600;">Pool size:</label>
+                    <input name="pool_size_{{ layer.id }}" class="form-control" type="text" value="{{ layer.pool_size }}">
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <br>
+    <input type="hidden" name="layers_order" id="layers_order">
+    <br>
+    <input class="btn btn-outline-success" id="submitLayersParameters" name="submitLayersParameters" onclick="updateLayersOrderHiddenValue()" style="margin-top: 2rem;" type="submit" value="Save">
+</form>
