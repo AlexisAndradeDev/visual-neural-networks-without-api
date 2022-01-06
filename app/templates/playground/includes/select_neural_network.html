@@ -1,0 +1,30 @@
+<div class="text-center" style="color: rgb(40, 40, 40);">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="card-text">
+                <h4 style="font-weight: 600;">Select Neural Network</h4>
+            </div>
+        </div>
+    </div>
+
+    <form method="POST">
+        <div class="row flex-fill" style="margin-top: 2rem;">
+            <div class="col-12">
+                {{ select_nn_form.hidden_tag() }}
+                <select name="selected_neural_network" style="font-size: 1.1rem; text-align: center;">
+                    {% for neural_network_option in neural_networks %}
+                    {% if neural_network_option.name == neural_network.name %}
+                        <option value="{{ neural_network_option.name }}" SELECTED>{{ neural_network_option.name }}</option>
+                    {% else %}
+                        <option value="{{ neural_network_option.name }}">{{ neural_network_option.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-12" style="margin-top: 1.5rem;">
+                {{ select_nn_form.selectNeuralNetwork(class="btn btn-block btn-outline-info", style="font-size: 1.1rem;") }}
+            </div>
+        </div>
+    </form>
+</div>

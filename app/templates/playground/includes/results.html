@@ -1,0 +1,172 @@
+<div class="card shadow-sm" style="color: rgb(40, 40, 40);">
+    <div class="card-body">
+        <div class="card-text">
+            <h5 style="font-weight: 600;">Results</h5>
+            <form method="POST">
+                {{ train_form.hidden_tag() }}
+                {{ train_form.submitTrain(class="btn btn-outline-danger", style="margin-top: 1rem;", onclick="onTrainNeuralNetwork()") }}
+            </form>
+            <div id="train-info" style="display: none; margin-top: 1rem; padding: 0.5rem; background-color: rgb(120, 0, 0);">
+                <p style="margin: 0.5rem; font-weight: 600; color: #f2f2f2;">Training...</p>
+            </div>
+            {% if show_results %}
+                <!-- Intermediate representations -->
+                <div id="intermediate_representations" style="margin-top: 3rem;">
+                    <p style="font-weight: 600; font-size: 1.2rem;">Intermediate Representations</p>
+                    {% for layer in neural_network.layers %}
+                        {% if layer.id in layers_images.keys() %}
+                        <div class="row flex-fill" style="margin-top: 2rem;">
+                            <div class="col-12">
+                                <p style="font-weight: 600; font-size: 1.1rem;">{{ layer.name }}</p>
+                            </div>
+                            <div class="col-12">
+                                <label style="font-weight: 600;">Feature number:</label>
+                                <input type="range" oninput="changeFeatureImage(this)" name="range_feature_number-{{ layer.id }}" id="range_feature_number-{{ layer.id }}" min="1" max="{{ len(layers_images[layer.id]) }}" value="1" />
+                                <input type="text" id="textbox_feature_number-{{ layer.id }}" oninput="changeFeatureImage(this)" value="1"></input>
+                                <img id="img_feature-{{ layer.id }}" src={{ layers_images[layer.id][0] }} />
+                            </div>
+                        </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+
+                <!-- Charts -->
+                <div id="metrics_charts" style="margin-top: 3rem;">
+                    <canvas id="accuracyChart" width="500" height="300"></canvas>
+                    <script>
+                        const accuracyData = {
+                            labels: [
+                                {% for epoch in metrics_history.epochs %}
+                                {{ epoch }},
+                                {% endfor %}
+                            ],
+                            datasets: [
+                            {
+                                label: "Train Accuracy",
+                                type: "bar",
+                                order: 2,
+                                data: [
+                                    {% for val in metrics_history.accuracy %}
+                                    {{ val }},
+                                    {% endfor %}
+                                ],
+                                fill: false,
+                                borderColor: "rgb(0, 120, 0)",
+                                backgroundColor: "rgba(0, 120, 0, 0.2)",
+                                borderWidth: 2,
+                            },
+                            {
+                                label:"Validation Accuracy",
+                                type: "line",
+                                order: 1,
+                                data: [
+                                    {% for val in metrics_history.val_accuracy %}
+                                    {{ val }},
+                                    {% endfor %}
+                                ],
+                                fill: false,
+                                borderColor: "rgb(120, 0, 0)",
+                                pointBackgroundColor: "rgba(120, 0, 0, 0.5)",
+                                pointHoverBackgroundColor: "rgba(120, 0, 0)",
+                                pointRadius: 7,
+                                pointHoverRadius: 9,
+                            }
+                            ]
+                        };
+                        const accuracyConfig = {
+                            data: accuracyData,
+                            options: {
+                                scales: {
+                                    y: {
+                                        suggestedMax: 1.00,
+                                        suggestedMin: 0.00,
+                                        title: {
+                                            display: true,
+                                            text: "Accuracy",
+                                        },
+                                    },
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: "Epoch / Iteration",
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        const ctx = document.getElementById('accuracyChart').getContext('2d');
+                        const accuracyChart = new Chart(ctx, accuracyConfig);
+                    </script>
+
+                    <canvas id="lossChart" width="500" height="300"></canvas>
+                    <script>
+                        const lossData = {
+                            labels: [
+                                {% for epoch in metrics_history.epochs %}
+                                {{ epoch }},
+                                {% endfor %}
+                            ],
+                            datasets: [
+                            {
+                                label: "Train Loss",
+                                type: "bar",
+                                order: 2,
+                                data: [
+                                    {% for val in metrics_history.loss %}
+                                    {{ val }},
+                                    {% endfor %}
+                                ],
+                                fill: false,
+                                borderColor: "rgb(0, 120, 0)",
+                                backgroundColor: "rgba(0, 120, 0, 0.2)",
+                                borderWidth: 2,
+                            },
+                            {
+                                label:"Validation Loss",
+                                type: "line",
+                                order: 1,
+                                data: [
+                                    {% for val in metrics_history.val_loss %}
+                                    {{ val }},
+                                    {% endfor %}
+                                ],
+                                fill: false,
+                                borderColor: "rgb(120, 0, 0)",
+                                pointBackgroundColor: "rgba(120, 0, 0, 0.5)",
+                                pointHoverBackgroundColor: "rgba(120, 0, 0)",
+                                pointRadius: 7,
+                                pointHoverRadius: 9,
+                            }
+                            ]
+                        };
+                        const lossConfig = {
+                            data: lossData,
+                            options: {
+                                scales: {
+                                    y: {
+                                        suggestedMax: 1.00,
+                                        suggestedMin: 0.00,
+                                        title: {
+                                            display: true,
+                                            text: "Loss",
+                                        },
+                                    },
+                                    x: {
+                                        title: {
+                                            display: true,
+                                            text: "Epoch / Iteration",
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        const lossCtx = document.getElementById('lossChart').getContext('2d');
+                        const lossChart = new Chart(lossCtx, lossConfig);
+                    </script>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
